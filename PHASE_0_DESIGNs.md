@@ -104,7 +104,7 @@ Humne code inspect karke paya ki pura system Solidity ke sath buri tarah bandha 
 #### 1. BEFORE (Purana System — Hardcoded)
 Isme har component ek-dusre ke andar ghusa hua tha:
 
-![Before Adapter Pattern - Tightly Coupled Architecture](C:/Users/saksh/.gemini/antigravity-ide/brain/a9458396-848f-4d66-a915-1ae8373c3988/architecture_before_1791719384662.jpg)
+![Before Adapter Pattern - Tightly Coupled Architecture](LeVer/docs/images/architecture_before.jpg)
 
 ```mermaid
 flowchart TD
@@ -162,7 +162,7 @@ flowchart TD
 #### 2. AFTER (Naya System — Adapter Pattern)
 Isme universal core alag hai aur language-specific adapters alag:
 
-![After Adapter Pattern - Pluggable Architecture](C:/Users/saksh/.gemini/antigravity-ide/brain/a9458396-848f-4d66-a915-1ae8373c3988/architecture_after_1791719419332.jpg)
+![After Adapter Pattern - Pluggable Architecture](LeVer/docs/images/architecture_after.jpg)
 
 ```mermaid
 flowchart TD

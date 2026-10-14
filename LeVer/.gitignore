@@ -1,0 +1,24 @@
+.venv-slither/
+.venv/
+logs/
+.env
+.env.*
+__pycache__/
+*.py[cod]
+*.log
+.DS_Store
+env.sh
+
+# Rust / Anchor / Solana
+target/
+.anchor/
+test-ledger/
+
+# Keep experiment template, ignore runtime outputs
+experiments/*
+!experiments/{exp_name}
+!experiments/{exp_name}/**
+
+# Keep anchor-spl template, ignore heavy submodules if needed
+libs_cache/forge-std/
+libs_cache/openzeppelin-contracts/

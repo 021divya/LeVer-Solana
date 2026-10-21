@@ -1,0 +1,5 @@
+Create a simple ERC-20 token smart contract in Solidity called "LeVerToken" with symbol "LVR" and 18 decimals.
+It should have a fixed total supply of 1,000,000 tokens minted to the deployer.
+Include standard transfer, approve, and transferFrom functions.
+Add an owner-only mint function and a burn function that any holder can call.
+Ensure proper access control and event emissions for all state changes.

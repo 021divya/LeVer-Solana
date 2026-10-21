@@ -1,0 +1,25 @@
+{
+  "mode": "full",
+  "model": "test-model",
+  "decision_policy": "legacy_core_lenient",
+  "passed": false,
+  "iterations": 1,
+  "max_iterations": 1,
+  "reason": "Solidity generation returned empty or structurally invalid source",
+  "lean": {
+    "enabled": true,
+    "passed": false
+  },
+  "non_lean": {
+    "enabled": true,
+    "passed": false
+  },
+  "external_evaluation": {
+    "enabled": false,
+    "affects_iteration": false,
+    "complete": null,
+    "slither_pass": null,
+    "llm_audit_pass": null
+  },
+  "metrics_path": "C:\\Users\\Divya Chauhan\\Downloads\\LeVer-Solana-main\\LeVer-Solana-main\\LeVer\\tests\\tmp_ws\\metrics_iter_1.json"
+}

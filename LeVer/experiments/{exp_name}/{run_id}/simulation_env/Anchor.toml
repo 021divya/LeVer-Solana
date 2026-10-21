@@ -1,0 +1,19 @@
+# Anchor.toml — Template for Solana experiment runs
+# This file is generated at runtime by the SolanaAdapter.
+#
+# [features]
+# seeds = true
+# skip-lint = false
+#
+# [programs.localnet]
+# lever_target = "<PROGRAM_ID>"
+#
+# [registry]
+# url = "https://api.apr.dev"
+#
+# [provider]
+# cluster = "Localnet"
+# wallet = "~/.config/solana/id.json"
+#
+# [scripts]
+# test = "anchor test --skip-local-validator"

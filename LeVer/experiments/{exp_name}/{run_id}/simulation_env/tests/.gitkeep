@@ -1,0 +1,5 @@
+// ──────────────────────────────────────────────────────────────────────
+// tests/ — Template directory for Anchor test scripts (Solana runs)
+// Test harness files (.ts / .rs) are generated at runtime by
+// SolanaAdapter.generate_test_harness()
+// ──────────────────────────────────────────────────────────────────────

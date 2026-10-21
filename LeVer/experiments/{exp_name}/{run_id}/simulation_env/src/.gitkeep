@@ -1,0 +1,5 @@
+// ──────────────────────────────────────────────────────────────────────
+// simulation_env/src/ — Contract source directory
+// This holds compiled contract artifacts or intermediate source files
+// used by both Solidity (foundry) and Solana (anchor) paths.
+// ──────────────────────────────────────────────────────────────────────

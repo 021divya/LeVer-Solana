@@ -1,0 +1,6 @@
+{
+  "target": "solidity",
+  "version": "1.0.0",
+  "_note": "MIGRATED from root property.json — EVM/Solidity-specific safety properties. See property.json for the original full dataset. This file will be populated from the existing property.json during implementation phase.",
+  "properties": []
+}

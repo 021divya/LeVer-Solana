@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+.venv*/
+*.log
+
+# Environment variables
+.env
+.env.*
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Rust / Anchor / Solana
+target/
+.anchor/
+test-ledger/
+
+# Submodules / heavy clone caches if any
+LeVer/libs_cache/forge-std/
+LeVer/libs_cache/openzeppelin-contracts/
+LeVer/logs/
+LeVer/.venv-slither/

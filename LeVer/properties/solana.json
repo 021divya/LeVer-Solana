@@ -1,0 +1,166 @@
+{
+  "target": "solana",
+  "version": "1.0.0",
+  "properties": [
+    {
+      "id": "SOL-01",
+      "name": "Missing Signer Check",
+      "category": "access_control",
+      "severity": "critical",
+      "invariant_template": "Every privileged instruction MUST validate that the expected signer account has actually signed the transaction.",
+      "description": "An instruction handler fails to verify that a required account has signed the transaction, allowing any user to invoke privileged operations (e.g. admin withdrawals, parameter changes) without authorization.",
+      "target_neutral": false,
+      "annotations": {
+        "anchor_constraint": "#[account(signer)] or has_one = authority",
+        "common_vuln": "Missing `Signer<'info>` type or `#[account(signer)]` constraint"
+      },
+      "detection_patterns": ["AccountInfo.*without.*Signer", "missing.*signer.*check"],
+      "remediation": "Use Anchor's `Signer<'info>` type or `#[account(signer)]` constraint for every authority account.",
+      "references": ["https://www.soldev.app/course/signer-auth"]
+    },
+    {
+      "id": "SOL-02",
+      "name": "Account Ownership Validation",
+      "category": "account_validation",
+      "severity": "critical",
+      "invariant_template": "Every deserialized account MUST be validated to be owned by the expected program before use.",
+      "description": "An instruction accepts an account without verifying its owner program, allowing an attacker to pass a fake account owned by a different program with crafted data.",
+      "target_neutral": false,
+      "annotations": {
+        "anchor_constraint": "#[account(owner = expected_program)]",
+        "common_vuln": "Using unchecked `AccountInfo` instead of typed `Account<'info, T>`"
+      },
+      "detection_patterns": ["AccountInfo.*without.*owner", "unchecked.*account"],
+      "remediation": "Use Anchor typed accounts (`Account<'info, T>`) which automatically validate ownership and deserialization.",
+      "references": ["https://www.soldev.app/course/owner-checks"]
+    },
+    {
+      "id": "SOL-03",
+      "name": "PDA & Bump Validation",
+      "category": "account_validation",
+      "severity": "high",
+      "invariant_template": "Every PDA account MUST be derived with the correct seeds and its bump seed MUST be validated (stored or canonical).",
+      "description": "A Program Derived Address is accepted without verifying its derivation seeds or bump, allowing an attacker to supply a different PDA or a non-canonical bump to access/modify unintended state.",
+      "target_neutral": false,
+      "annotations": {
+        "anchor_constraint": "#[account(seeds = [...], bump = stored_bump)]",
+        "common_vuln": "Missing `seeds` and `bump` in account constraint"
+      },
+      "detection_patterns": ["find_program_address.*without.*bump", "PDA.*unchecked"],
+      "remediation": "Always use `#[account(seeds = [..], bump)]` constraints and store the canonical bump on initialization.",
+      "references": ["https://www.soldev.app/course/bump-seed-canonicalization"]
+    },
+    {
+      "id": "SOL-04",
+      "name": "Duplicate Account Aliasing",
+      "category": "state_integrity",
+      "severity": "high",
+      "invariant_template": "When an instruction takes multiple accounts of the same type, each account MUST be proven distinct (no aliasing).",
+      "description": "An instruction handler accepts two accounts (e.g. `from` and `to`) without checking they are distinct. An attacker passes the same account for both, potentially doubling balances or bypassing transfer checks.",
+      "target_neutral": false,
+      "annotations": {
+        "anchor_constraint": "#[account(constraint = from.key() != to.key())]",
+        "common_vuln": "No key equality check between same-type accounts"
+      },
+      "detection_patterns": ["duplicate.*account", "alias.*account"],
+      "remediation": "Add explicit `constraint = a.key() != b.key()` for every pair of same-type accounts.",
+      "references": ["https://github.com/coral-xyz/sealevel-attacks/blob/master/programs/8-duplicate-mutable-accounts"]
+    },
+    {
+      "id": "SOL-05",
+      "name": "CPI Program-ID Validation",
+      "category": "cpi_safety",
+      "severity": "critical",
+      "invariant_template": "Every Cross-Program Invocation MUST validate the target program's ID before invoking it.",
+      "description": "A CPI call is made using a program account passed by the user without verifying its program ID, allowing an attacker to redirect the CPI to a malicious program.",
+      "target_neutral": false,
+      "annotations": {
+        "anchor_constraint": "Program<'info, TargetProgram> type checks automatically",
+        "common_vuln": "Using unchecked AccountInfo for CPI target program"
+      },
+      "detection_patterns": ["invoke.*without.*program.*check", "CPI.*unchecked.*program"],
+      "remediation": "Use Anchor's `Program<'info, T>` type for CPI target programs, or explicitly check `program.key() == expected_program_id`.",
+      "references": ["https://www.soldev.app/course/arbitrary-cpi"]
+    },
+    {
+      "id": "SOL-06",
+      "name": "Sysvar Account Validation",
+      "category": "account_validation",
+      "severity": "medium",
+      "invariant_template": "Sysvar accounts (Clock, Rent, etc.) MUST be validated against their known addresses or accessed via sysvar API.",
+      "description": "A sysvar account (Rent, Clock, etc.) is accepted as a user-supplied AccountInfo without verifying it matches the canonical sysvar address, allowing data spoofing.",
+      "target_neutral": false,
+      "annotations": {
+        "anchor_constraint": "Sysvar<'info, Clock> or address = sysvar::clock::ID",
+        "common_vuln": "Accepting sysvar as unchecked AccountInfo"
+      },
+      "detection_patterns": ["sysvar.*unchecked", "Clock.*AccountInfo"],
+      "remediation": "Use Anchor's `Sysvar<'info, T>` type or `Clock::get()` / `Rent::get()` sysvar API.",
+      "references": ["https://docs.solana.com/developing/runtime-facilities/sysvars"]
+    },
+    {
+      "id": "SOL-07",
+      "name": "Arithmetic Overflow",
+      "category": "arithmetic",
+      "severity": "high",
+      "invariant_template": "All arithmetic operations on token amounts and balances MUST use checked/saturating math to prevent overflow/underflow.",
+      "description": "Arithmetic operations (addition, subtraction, multiplication) on u64 balances or amounts are performed without overflow checks, potentially wrapping around and creating or destroying value.",
+      "target_neutral": true,
+      "annotations": {
+        "rust_methods": "checked_add(), checked_sub(), checked_mul(), saturating_add()",
+        "common_vuln": "Using +, -, * directly on u64 amounts"
+      },
+      "detection_patterns": ["amount.*\\+", "balance.*\\-", "unchecked.*arithmetic"],
+      "remediation": "Replace all `+`, `-`, `*` on financial values with `checked_add()`, `checked_sub()`, `checked_mul()` and handle the `None` case with a custom error.",
+      "references": ["https://doc.rust-lang.org/std/primitive.u64.html#method.checked_add"]
+    },
+    {
+      "id": "SOL-08",
+      "name": "Signer & Authority Mismatch",
+      "category": "access_control",
+      "severity": "critical",
+      "invariant_template": "The signer of a privileged instruction MUST match the authority stored in the target account's state.",
+      "description": "An instruction checks that *some* account signed the transaction but does not verify that the signer matches the authority/owner stored in the account being modified.",
+      "target_neutral": false,
+      "annotations": {
+        "anchor_constraint": "#[account(has_one = authority)]",
+        "common_vuln": "Signer present but not matched against stored authority pubkey"
+      },
+      "detection_patterns": ["authority.*mismatch", "signer.*not.*owner"],
+      "remediation": "Use `#[account(has_one = authority)]` or explicitly compare `signer.key() == account.authority`.",
+      "references": ["https://www.soldev.app/course/signer-auth"]
+    },
+    {
+      "id": "SOL-09",
+      "name": "State Transition Invariant",
+      "category": "state_integrity",
+      "severity": "high",
+      "invariant_template": "Account state transitions MUST follow a valid finite-state machine — illegal transitions MUST be rejected.",
+      "description": "An instruction modifies account state without validating the current state, allowing invalid transitions (e.g. finalizing an already-finalized auction, withdrawing from an uninitialized vault).",
+      "target_neutral": true,
+      "annotations": {
+        "common_vuln": "Missing state enum check before mutation",
+        "pattern": "match account.status { Valid => ..., _ => return Err(...) }"
+      },
+      "detection_patterns": ["state.*transition", "status.*unchecked"],
+      "remediation": "Define an explicit state enum and validate the current state before every mutation with a `require!()` or `match` guard.",
+      "references": []
+    },
+    {
+      "id": "SOL-10",
+      "name": "CPI Cross-Instruction Assumptions",
+      "category": "cpi_safety",
+      "severity": "high",
+      "invariant_template": "A CPI caller MUST NOT assume the callee's return data or state effects without post-CPI validation.",
+      "description": "After a CPI call, the calling program assumes success or specific state changes without checking the return data or re-reading the modified accounts, leaving the program vulnerable to a callee that fails silently or returns unexpected data.",
+      "target_neutral": false,
+      "annotations": {
+        "common_vuln": "No post-CPI account reload or return data check",
+        "pattern": "invoke() followed by immediate state mutation without reload"
+      },
+      "detection_patterns": ["invoke.*without.*check", "CPI.*no.*reload"],
+      "remediation": "After every CPI, reload affected accounts and validate expected post-conditions before continuing.",
+      "references": []
+    }
+  ]
+}

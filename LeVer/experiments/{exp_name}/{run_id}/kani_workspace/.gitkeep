@@ -1,0 +1,5 @@
+// ──────────────────────────────────────────────────────────────────────
+// kani_workspace/ — Kani formal verification workspace (Solana path)
+// Kani harness .rs files are generated at runtime by
+// SolanaAdapter.generate_formal_spec() and verified via "cargo kani"
+// ──────────────────────────────────────────────────────────────────────

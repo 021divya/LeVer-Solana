@@ -1,0 +1,76 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "LeVer Semantic Property IR Schema",
+  "description": "Target-neutral schema for safety properties used by the LeVer pipeline. Each property file (solidity.json, solana.json, …) MUST conform to this schema.",
+  "type": "object",
+  "required": ["target", "version", "properties"],
+  "properties": {
+    "target": {
+      "type": "string",
+      "description": "Target chain identifier (e.g. 'solidity', 'solana', 'move')."
+    },
+    "version": {
+      "type": "string",
+      "description": "Schema version for forward-compatibility."
+    },
+    "properties": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "category", "severity", "invariant_template", "description"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier (e.g. 'SOL-01', 'EVM-03')."
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable short name."
+          },
+          "category": {
+            "type": "string",
+            "enum": ["access_control", "arithmetic", "reentrancy", "state_integrity", "cpi_safety", "account_validation", "economic", "upgrade_safety"],
+            "description": "Property category."
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["critical", "high", "medium", "low", "informational"],
+            "description": "Impact severity."
+          },
+          "invariant_template": {
+            "type": "string",
+            "description": "Natural-language invariant template that can be instantiated per-contract."
+          },
+          "description": {
+            "type": "string",
+            "description": "Detailed description of the vulnerability / property."
+          },
+          "target_neutral": {
+            "type": "boolean",
+            "default": false,
+            "description": "If true, this property applies across multiple targets."
+          },
+          "annotations": {
+            "type": "object",
+            "description": "Per-chain specific metadata (opcodes, instruction names, etc.).",
+            "additionalProperties": true
+          },
+          "detection_patterns": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Regex or keyword patterns to detect this vulnerability in source."
+          },
+          "remediation": {
+            "type": "string",
+            "description": "Recommended fix or mitigation."
+          },
+          "references": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Links to audit reports, CVEs, documentation."
+          }
+        }
+      }
+    }
+  }
+}
